@@ -1,0 +1,131 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	font-family: Arial, sans-serif;
+}
+
+html {
+    color-scheme: dark;
+}
+
+body {
+	display: flex;
+	height: 100vh;
+	background: #1c1e22;
+	color: #f1f1f1;
+}
+
+#settings-panel {
+    width: 360px;
+    background: linear-gradient(135deg, #2b2e33, #1a1c20);
+    padding: 20px;
+    overflow-y: auto;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+
+    scrollbar-width: thin;
+	user-select: none;
+}
+
+#settings-panel h2 {
+	text-align: center;
+	margin-bottom: 20px;
+	font-size: 1.5em;
+	border-bottom: 1px solid #444;
+	padding-bottom: 10px;
+}
+
+/* Tab Buttons */
+#tab-buttons {
+	display: flex;
+	margin-bottom: 30px;
+}
+
+#tab-buttons button {
+	flex: 1;
+	background-color: #3b3f47;
+	border: none;
+	color: #f1f1f1;
+	padding: 10px;
+	height: 20px;
+	margin: 0 2px;
+	cursor: pointer;
+	transition: background-color 0.3s;
+}
+
+#tab-buttons button:active {
+    transform: scale(0.95);
+}
+
+#tab-buttons button.active,
+#tab-buttons button:hover {
+	background-color: #575d67;
+}
+
+#tab-buttons button.red.active { background-color: #ff6161; }
+#tab-buttons button.blue.active { background-color: #66ace6; }
+#tab-buttons button.yellow.active { background-color: #ffd755; }
+#tab-buttons button.green.active { background-color: #59ce59; }
+#tab-buttons button.white.active { background-color: #d6d6d6; }
+
+.setting-group label.red { color: #ff6161; }
+.setting-group label.blue { color: #66ace6; }
+.setting-group label.yellow { color: #ffd755; }
+.setting-group label.green { color: #59ce59; }
+.setting-group label.white { color: #d6d6d6; }
+
+
+/* Tab Content */
+.tab-content {
+	display: none;
+}
+
+.tab-content.active {
+	display: block;
+}
+
+.setting-group {
+	margin-bottom: 20px;
+	/* background-color: teal; */
+}
+
+.setting-group label {
+	display: block;
+	margin-bottom: 7px;
+	font-size: 0.9em;
+}
+
+.setting-group input {
+	width: 100%;
+	padding: 6px 8px;
+	font-size: 1em;
+	border: 1px solid #555;
+	border-radius: 3px;
+	background: #2b2e33;
+	color: #f1f1f1;
+}
+
+/* Styling for the boid name */
+.boid-name {
+	font-size: 1.5em !important;
+	font-weight: bold;
+	margin-bottom: 20px !important;
+}
+
+/* Canvas */
+#canvas-container {
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: #000;
+}
+
+canvas {
+	outline: 2px solid #444;
+	background: #111;
+	width: 90%;
+	height: 90%;
+	padding: 0;
+	border: 0;
+}
