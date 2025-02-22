@@ -68,15 +68,19 @@ class BoidType {
 		'size',
 		'shape',
 		'flockSize',
+
 		'minSpeed',
 		'maxSpeed',
 		'turnFactor',
+		
+		'separationRadius',
 		'perceptionRadius',
 		'evasionFov',
-		'separationRadius',
+
 		'separationWeight',
 		'alignmentWeight',
 		'cohesionWeight',
+
 		'anchorRadius',
 		'anchoredCohesion'
 	];

@@ -134,17 +134,6 @@ function initSettingsPanel() {
 		// Event listener for tab switching
 		button.addEventListener('click', () => switchTab(index));
 	});
-
-	// Switch tabs based on number keys (index in boidTypes)
-	document.addEventListener('keydown', (event) => {
-		if (event.target.tagName === 'INPUT') return; // Ignore if typing in input
-
-		if (event.key >= 1 && event.key <= boidTypes.length) {
-			event.target.blur();
-			const index = event.key - 1;
-			switchTab(index);
-		}
-	});
 }
 
 // Make a new settings page active
@@ -180,17 +169,27 @@ document.addEventListener('keydown', (event) => {
 	switch (event.code) {
 		case 'Escape':
 			document.activeElement.blur(); // Remove focus from any selected button/input
-			break;
+			return;
 		case 'Space':
 			event.preventDefault(); // Do not scroll bar (for instance)
-			sim.togglePause();
-			break;
+			if (event.target.tagName !== 'INPUT') sim.togglePause();
+			return;
 		case 'KeyR':
 			allFlocks[activeIndex].scatter();
-			break;
+			return;
 		case 'KeyS':
 			if (sim) sim.toggleSolo();
-			break;
+			return;
+	}
+
+	// Ignore if typing in input
+	if (event.target.tagName === 'INPUT') return;
+
+	// Switch tabs based on number keys (index in boidTypes)
+	if (event.key >= 1 && event.key <= boidTypes.length) {
+		event.target.blur();
+		const index = event.key - 1;
+		switchTab(index);
 	}
 });
 
