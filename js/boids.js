@@ -586,7 +586,7 @@ function startSimulation(allFlocks) {
 			if (solo && !flock.active) continue;
 
 			// Consider all boids, or own flock, for collisions
-			const collidableBoids = collisions ? allBoids : flock.members;
+			const collidableBoids = (collisions && !solo) ? allBoids : flock.members;
 
 			const boids = flock.members;
 
