@@ -61,7 +61,7 @@ class BoidType {
 		maxSpeed: 			{ min: 60, 		max: 900, 	stepSize: 5 	},
 		turnFactor: 		{ min: 0, 		max: 900, 	stepSize: 5 	},
 		perceptionRadius: 	{ min: 20, 		max: 150, 	stepSize: 5 	},
-		separationRadius: 	{ min: 0, 		max: 100, 	stepSize: 5 	},
+		separationRadius: 	{ min: 10, 		max: 100, 	stepSize: 5 	},
 		separationWeight: 	{ min: 0, 		max: 2, 	stepSize: 0.1 	},
 		alignmentWeight: 	{ min: 0, 		max: 2, 	stepSize: 0.1 	},
 		cohesionWeight: 	{ min: 0, 		max: 2, 	stepSize: 0.1 	},
@@ -555,9 +555,12 @@ function startSimulation(allFlocks) {
 		
 		drawAnchor(); // Draw anchor if it's set
 
-		for (let k = 0; k < 1; ++k) {
-			k = 0;
+		for (let k = 0; k < allFlocks.length; ++k) {
 			const flock = allFlocks[k];
+
+			// If solo mode is enabled, skip all non-active flocks
+			if (solo && !flock.active) continue;
+
 			const boids = flock.members;
 
 			// Update & apply forces -- velocity and position of each boid

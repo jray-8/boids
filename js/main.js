@@ -36,6 +36,9 @@ function createInputGroup(settingName, boidSettings) {
 	input.step = constraints.stepSize;
 	input.value = boidSettings[settingName]; // Default value
 
+	// Tooltip
+	input.title = `Enter a value between ${constraints.min} and ${constraints.max}`;
+
 	// Update setting based on input value
 	function updateSetting() {
 		let newValue = parseFloat(input.value);
