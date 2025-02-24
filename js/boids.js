@@ -8,7 +8,7 @@ const canvasContainer = document.getElementById('canvas-container');
 
 /** @type {CanvasRenderingContext2D} */
 const ctx = canvas.getContext('2d');
-const canvasHeight = 600;
+const canvasHeight = 600; //$
 let canvasWidth = null; // scale to match canvas element aspect ratio
 
 function resizeCanvas() {
@@ -45,21 +45,27 @@ class BoidType {
 		this.settings = settings; // All editable settings will go into this object
 	}
 
-	// Define the min, max, and stepSize for each input setting
+	/* Define the min, max, and stepSize for each input setting
+	 *
+	 * minSpeed is implicitly capped at maxSpeed
+	 * separationRange is implicitly capped at perceptionRange
+	 * 
+	 * separationRange also contributes to magnitude of separation vector
+	 * if turnFactor is 0, boids leave the field indefinitely
+	*/
 	static settingsConstraints = {
-		size: 				{ min: 5, 		max: 25, 	stepSize: 1 	},
+		size: 				{ min: 3, 		max: 25, 	stepSize: 1 	},
 		shape:				{ min: 0,		max: 1,		stepSize: 1 	},
-		flockSize:			{ min: 0,		max: 50,	stepSize: 1 	},
-		minSpeed: 			{ min: 0, 		max: 0.8, 	stepSize: 0.01 	},
-		maxSpeed: 			{ min: 0.1, 	max: 2, 	stepSize: 0.01 	},
-		perceptionRadius: 	{ min: 20, 		max: 100, 	stepSize: 1 	},
-		evasionFov: 		{ min: 0, 		max: 360, 	stepSize: 5 	},
-		turnFactor: 		{ min: 0, 		max: 2, 	stepSize: 0.1 	},
-		separationRadius: 	{ min: 10, 		max: 50, 	stepSize: 1 	},
+		flockSize:			{ min: 0,		max: 30,	stepSize: 1 	},
+		minSpeed: 			{ min: 0, 		max: 480, 	stepSize: 5 	},
+		maxSpeed: 			{ min: 60, 		max: 900, 	stepSize: 5 	},
+		turnFactor: 		{ min: 0, 		max: 900, 	stepSize: 5 	},
+		perceptionRadius: 	{ min: 20, 		max: 150, 	stepSize: 5 	},
+		separationRadius: 	{ min: 0, 		max: 100, 	stepSize: 5 	},
 		separationWeight: 	{ min: 0, 		max: 2, 	stepSize: 0.1 	},
 		alignmentWeight: 	{ min: 0, 		max: 2, 	stepSize: 0.1 	},
 		cohesionWeight: 	{ min: 0, 		max: 2, 	stepSize: 0.1 	},
-		anchorRadius: 		{ min: 0, 		max: 100, 	stepSize: 1 	},
+		anchorRadius: 		{ min: 0, 		max: 100, 	stepSize: 5 	},
 		anchoredCohesion: 	{ min: 0, 		max: 2, 	stepSize: 0.1 	}
 	};
 
@@ -73,9 +79,8 @@ class BoidType {
 		'maxSpeed',
 		'turnFactor',
 		
-		'separationRadius',
 		'perceptionRadius',
-		'evasionFov',
+		'separationRadius',
 
 		'separationWeight',
 		'alignmentWeight',
@@ -85,90 +90,90 @@ class BoidType {
 		'anchoredCohesion'
 	];
 
-	// Settings that should be multiplied by the height constant
-	static percentHeightSettings = ['minSpeed', 'maxSpeed', 'turnFactor'];
+	// Settings that should be retrieved as floats
+	static floatSettings = [
+		'separationWeight',
+		'alignmentWeight',
+		'cohesionWeight',
+		'anchoredCohesion'
+	];
 }
 
 // Create five different boid types with unique parameters
 const boidTypes = [
-	new BoidType('Red', '#ff0000', {
-		size: 10,
+	new BoidType('Red', '#ff2323', {
+		size: 8,
 		shape: Shape.TRIANGLE,
-		flockSize: 5,
-		minSpeed: 0.3,
-		maxSpeed: 0.3,
+		flockSize: 7,
+		minSpeed: 180,
+		maxSpeed: 180,
+		turnFactor: 90,
 		perceptionRadius: 100,
-		evasionFov: 360,
-		turnFactor: 0.15,
 		separationRadius: 50,
 		separationWeight: 1.0,
 		alignmentWeight: 1.0,
 		cohesionWeight: 1.0,
-		anchorRadius: 50,
+		anchorRadius: 25,
 		anchoredCohesion: 1.0
 	}),
-	new BoidType('Yellow', '#ffff00', {
+	new BoidType('Yellow', '#faca2a', {
 		size: 16,
 		shape: Shape.TRIANGLE,
-		flockSize: 40,
-		minSpeed: 0.8,
-		maxSpeed: 2.0,
-		perceptionRadius: 60,
-		evasionFov: 120,
-		turnFactor: 0.10,
-		separationRadius: 40,
+		flockSize: 25,
+		minSpeed: 40,
+		maxSpeed: 110,
+		turnFactor: 3,
+		perceptionRadius: 150,
+		separationRadius: 100,
 		separationWeight: 1.5,
 		alignmentWeight: 1,
-		cohesionWeight: 0.5,
-		anchorRadius: 50,
-		anchoredCohesion: 1.0
+		cohesionWeight: 0,
+		anchorRadius: 100,
+		anchoredCohesion: 0
 	}),
-	new BoidType('Blue', '#0000ff', {
-		size: 5,
+	new BoidType('Blue', '#2f90ff', {
+		size: 3,
 		shape: Shape.TRIANGLE,
 		flockSize: 20,
-		minSpeed: 1.4,
-		maxSpeed: 3.5,
-		perceptionRadius: 30,
-		evasionFov: 360,
-		turnFactor: 0.20,
-		separationRadius: 7,
+		minSpeed: 150,
+		maxSpeed: 230,
+		turnFactor: 120,
+		perceptionRadius: 100,
+		separationRadius: 10,
 		separationWeight: 1,
-		alignmentWeight: 1.5,
-		cohesionWeight: 1.3,
-		anchorRadius: 50,
-		anchoredCohesion: 1.0
+		alignmentWeight: 0,
+		cohesionWeight: 1,
+		anchorRadius: 0,
+		anchoredCohesion: 2
 	}),
-	new BoidType('Green', '#00ff00', {
-		size: 12,
+	new BoidType('Green', '#2dff2d', {
+		size: 10,
 		shape: Shape.TRIANGLE,
 		flockSize: 2,
-		minSpeed: 2.5,
-		maxSpeed: 5.0,
-		perceptionRadius: 40,
-		evasionFov: 80,
-		turnFactor: 0.10,
-		separationRadius: 15,
-		separationWeight: 0.8,
-		alignmentWeight: 1.6,
-		cohesionWeight: 1.0,
+		minSpeed: 220,
+		maxSpeed: 600,
+		turnFactor: 50,
+		perceptionRadius: 85,
+		separationRadius: 45,
+		separationWeight: 2,
+		alignmentWeight: 0,
+		cohesionWeight: 0.8,
 		anchorRadius: 50,
-		anchoredCohesion: 1.0
+		anchoredCohesion: 0
 	}),
-	new BoidType('White', '#ffffff', {
-		size: 10,
+	new BoidType('White', '#e0e0e0', {
+		size: 4,
 		shape: Shape.CIRCLE,
-		flockSize: 30,
-		minSpeed: 1.0,
-		maxSpeed: 3.0,
-		perceptionRadius: 15,
-		evasionFov: 180,
-		turnFactor: 0.08,
-		separationRadius: 5,
-		separationWeight: 0.2,
-		alignmentWeight: 0.5,
-		cohesionWeight: 0.5,
-		anchorRadius: 50,
+		flockSize: 11,
+		minSpeed: 90,
+		maxSpeed: 150,
+		turnFactor: 30,
+		perceptionRadius: 20,
+		separationRadius: 65,
+		separationWeight: 1,
+		alignmentWeight: 1,
+		cohesionWeight: 0,
+		anchorRadius: 100,
 		anchoredCohesion: 0
 	}),
 ];
@@ -288,7 +293,6 @@ class Boid {
 	}
 
 	updatePosition(deltaTime) {
-		// Update position
 		const deltaPos = this.velocity.clone();
 		deltaPos.multiply(deltaTime);
 		this.position.add(deltaPos);
@@ -313,11 +317,11 @@ class Boid {
 		// Apply forces to velocity
 		this.velocity.add(totalForce);
 
-		// Limit speed
+		// Limit speed -- Max speed takes precedence over min speed
 		const maxSpeed = this.boidType.settings.maxSpeed;
 		const minSpeed = this.boidType.settings.minSpeed;
-		this.velocity.upperLimit(maxSpeed);
 		this.velocity.lowerLimit(minSpeed);
+		this.velocity.upperLimit(maxSpeed);
 	}
 
 	/** Return force to attract boid towards a target position */
@@ -367,16 +371,13 @@ class Boid {
 	getFlockForce(flock, activeFlock) {
 		const separationForce = new Vector(0, 0);
 		const alignmentForce = new Vector(0, 0);
-		const cohesionForce = new Vector(0, 0);		
+		const cohesionForce = new Vector(0, 0);
 
 		// Steer away from boids in this radius
 		const protectedRange = this.boidType.settings.separationRadius;
 
 		// Align and move towards the COM of boids in this radius
 		const visibleRange = this.boidType.settings.perceptionRadius;
-
-		// Field of View in degrees
-		const fov = this.boidType.settings.evasionFov;
 
 		let neighboringBoids = 0;
 
@@ -401,18 +402,6 @@ class Boid {
 			alignmentForce.add(otherboid.velocity);
 			cohesionForce.add(otherboid.position);
 			++neighboringBoids;
-
-			// V-Formation (vision obstruction)
-			const toOther = new Vector(
-				otherboid.position.x - this.position.x, 
-				otherboid.position.y - this.position.y
-			);
-
-			const angle = Vector.angleBetween(this.velocity, toOther);
-
-			// Within FOV
-			if (angle * 2 < fov) {
-			}
 		}
 
 		// Average and get delta
@@ -567,6 +556,7 @@ function startSimulation(allFlocks) {
 		drawAnchor(); // Draw anchor if it's set
 
 		for (let k = 0; k < 1; ++k) {
+			k = 0;
 			const flock = allFlocks[k];
 			const boids = flock.members;
 

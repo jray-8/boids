@@ -39,22 +39,24 @@ function createInputGroup(settingName, boidSettings) {
 	// Update setting based on input value
 	function updateSetting() {
 		let newValue = parseFloat(input.value);
+		if (!BoidType.floatSettings.includes(settingName)) {
+			newValue = parseInt(newValue);
+		}
 
 		if (!isNaN(newValue)) {
 			// Restrict range
 			newValue = Math.max(constraints.min, Math.min(constraints.max, newValue));
 			input.value = newValue;
-
-			// Handle conversions
-			if (BoidType.percentHeightSettings.includes(settingName)) {
-				newValue *= canvasHeight;
-			}
 			boidSettings[settingName] = newValue;
 
 			// Update flock members
 			if (settingName === 'flockSize') {
 				allFlocks[activeIndex].updateMembers();
 			}
+		}
+		// Reset to last valid value
+		else {
+			input.value = boidSettings[settingName];
 		}
 	}
 

@@ -63,15 +63,15 @@ body {
 }
 
 #tab-buttons button.red.active { background-color: #ff6161; }
-#tab-buttons button.blue.active { background-color: #66ace6; }
+#tab-buttons button.blue.active { background-color: #66bde6; }
 #tab-buttons button.yellow.active { background-color: #ffd755; }
-#tab-buttons button.green.active { background-color: #59ce59; }
+#tab-buttons button.green.active { background-color: #51d851; }
 #tab-buttons button.white.active { background-color: #d6d6d6; }
 
 .setting-group label.red { color: #ff6161; }
-.setting-group label.blue { color: #66ace6; }
+.setting-group label.blue { color: #66bde6; }
 .setting-group label.yellow { color: #ffd755; }
-.setting-group label.green { color: #59ce59; }
+.setting-group label.green { color: #51d851; }
 .setting-group label.white { color: #d6d6d6; }
 
 

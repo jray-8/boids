@@ -8,6 +8,10 @@ export default class Vector {
 		return Math.sqrt((v2.x - v1.x) ** 2 + (v2.y - v1.y) ** 2);
 	}
 
+	static dotProduct(v1, v2) {
+		return (v1.x * v2.x) + (v1.y * v2.y);
+	}
+
 	/** Returns the angle (in degrees) between two vectors */
 	static angleBetween(v1, v2) {
 		// v1 dot v2 = cos(theta) * |v1| * |v2|
@@ -16,11 +20,17 @@ export default class Vector {
 		let cosTheta = dotProduct / (v1.magnitude() * v2.magnitude());
 		cosTheta = Math.max(-1, Math.min(cosTheta, 1)); // Clamp to range of cos(x) [-1, 1]
 
-		// Angle in radians
-		const theta = Math.acos(cosTheta);
+		// Angle (theta) in radians
+		return Math.acos(cosTheta);
 
-		// Convert to degrees
-		return theta * (180 / Math.PI);
+		// Angle in degrees
+		// return theta * 180 / Math.PI;
+	}
+
+	/** Returns a perpendicular vector to this one (90 degrees CCW or CW) */
+	static perpendicular(v, ccw = true) {
+		if (ccw) return new Vector(-v.y, v.x);
+		return new Vector(v.y, -v.x);
 	}
 
 	clone() {
