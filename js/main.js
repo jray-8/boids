@@ -182,8 +182,11 @@ document.addEventListener('keydown', (event) => {
 		case 'KeyR':
 			allFlocks[activeIndex].scatter();
 			return;
-		case 'KeyS':
-			if (sim) sim.toggleSolo();
+		case 'KeyT':
+			sim.toggleSolo();
+			return;
+		case 'KeyD':
+			sim.toggleCollisions();
 			return;
 	}
 

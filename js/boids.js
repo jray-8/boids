@@ -302,15 +302,18 @@ class Boid {
 	 * 
 	 * The resulting force will be used to update the boid's velocity (restricted by its max and min speed boundaries).
 	 */
-	updateForces(flock, activeFlock) {
+	updateForces(flock, collidableBoids) {
 		// Add forces from neighboring boids
-		const totalForce = this.getFlockForce(flock, activeFlock);
+		const totalForce = this.getFlockForce(flock);
+
+		// Add forces from separation
+		totalForce.add(this.getSeparationForce(collidableBoids));
 		
 		// Add edge handling forces
 		totalForce.add(this.getEdgeForce());
 
 		// Add attraction to an anchor point
-		if (activeFlock && anchorPosition != null) {
+		if (flock.active && anchorPosition != null) {
 			totalForce.add(this.seek(anchorPosition));
 		}
 
@@ -337,7 +340,7 @@ class Boid {
 
 	/** Returns the force to bring boids back on screen */
 	getEdgeForce() {
-		const margin = 25;
+		const margin = 25; //$
 		const edgeForce = new Vector(0, 0);
 	
 		// Horizontal edges
@@ -364,48 +367,71 @@ class Boid {
 	}
 
 	// Separation: boids move away from boids that are too close
-	// Alignment: boids attempt to match the velocities of their neighbors
-	// Cohesion: boids move towards the center of mass of their neighbors
 
-	/** Returns the total force resulting from separation, alignment and cohesion acting on this boid */
-	getFlockForce(flock, activeFlock) {
+	/** Returns the force that repels boids from other boids 
+	 * 
+	 * @param boids - An array of Boids to consider for repulsion
+	*/
+	getSeparationForce(boids) {
 		const separationForce = new Vector(0, 0);
-		const alignmentForce = new Vector(0, 0);
-		const cohesionForce = new Vector(0, 0);
 
 		// Steer away from boids in this radius
 		const protectedRange = this.boidType.settings.separationRadius;
+
+		for (let i=0; i < boids.length; ++i) {
+			const otherBoid = boids[i];
+			if (otherBoid === this) continue; // Skip itself
+
+			const distance = Vector.distance(this.position, otherBoid.position);
+
+			// Separation
+			if (distance < protectedRange) {
+				// Vector from other boid to this one (push away)
+				const toSelf = new Vector(this.position.x - otherBoid.position.x, this.position.y - otherBoid.position.y);
+				const m = toSelf.magnitude();
+				if (m > 0) {
+					// Invert magnitude: closer boids yield a greater magnitude (capped at protectedRange)
+					toSelf.multiply((protectedRange - m) / m);
+					separationForce.add(toSelf);
+				}
+			}
+		}
+		// Note: Separation forces accumulate so we do not average them
+
+		// Scale by weight
+		const separationWeight = this.boidType.settings.separationWeight;
+		separationForce.multiply(separationWeight);
+
+		return separationForce;
+	}
+
+	// Alignment: boids attempt to match the velocities of their neighbors
+	// Cohesion: boids move towards the center of mass of their neighbors
+
+	/** Returns the total force resulting from alignment and cohesion acting on this boid */
+	getFlockForce(flock) {
+		const alignmentForce = new Vector(0, 0);
+		const cohesionForce = new Vector(0, 0);
 
 		// Align and move towards the COM of boids in this radius
 		const visibleRange = this.boidType.settings.perceptionRadius;
 
 		let neighboringBoids = 0;
 
-		for (let i=0; i < flock.length; ++i) {
-			const otherboid = flock[i];
-			if (otherboid === this) continue; // Self does not contribute to its own flock forces
+		for (let i=0; i < flock.members.length; ++i) {
+			const otherBoid = flock.members[i];
+			if (otherBoid === this) continue; // Self does not contribute to its own flock forces
 
-			const distance = Vector.distance(this.position, otherboid.position);
+			const distance = Vector.distance(this.position, otherBoid.position);
 			if (distance > visibleRange) continue; // Cannot see (do not consider)
 
-			// Separation
-			if (distance < protectedRange) {
-				const diff = new Vector(this.position.x - otherboid.position.x, this.position.y - otherboid.position.y);
-				const m = diff.magnitude();
-				if (m > 0) {
-					diff.multiply((protectedRange - m) / m);
-					separationForce.add(diff);
-				}
-			}
-
 			// Alignment & Cohesion
-			alignmentForce.add(otherboid.velocity);
-			cohesionForce.add(otherboid.position);
+			alignmentForce.add(otherBoid.velocity);
+			cohesionForce.add(otherBoid.position);
 			++neighboringBoids;
 		}
 
 		// Average and get delta
-		// Note: Separation forces accumulate so we do not average them
 		if (neighboringBoids > 0) {
 			alignmentForce.divide(neighboringBoids);
 			cohesionForce.divide(neighboringBoids);
@@ -417,20 +443,15 @@ class Boid {
 		// Apply weights and sum forces:
 		const combinedForce = new Vector(0, 0);
 
-		// Separation
-		const separationWeight = this.boidType.settings.separationWeight;
-		separationForce.multiply(separationWeight);
-		combinedForce.add(separationForce);
-
 		// Alignment -- boids do not align when anchored
-		if (!activeFlock || anchorPosition == null) {
+		if (!flock.active || anchorPosition == null) {
 			const alignmentWeight = this.boidType.settings.alignmentWeight;
 			alignmentForce.multiply(alignmentWeight);
 			combinedForce.add(alignmentForce);	
 		}
 
 		// Cohesion -- boids use different COM weight anchored
-		if (!activeFlock || anchorPosition == null) {
+		if (!flock.active || anchorPosition == null) {
 			const cohesionWeight = this.boidType.settings.cohesionWeight;
 			cohesionForce.multiply(cohesionWeight);
 			combinedForce.add(cohesionForce);
@@ -542,7 +563,11 @@ document.addEventListener('keydown', (e) => {
 function startSimulation(allFlocks) {
 	let lastTime = performance.now(); 	// Reset lastTime to avoid deltaTime jumps
 	let isPaused = false; 				// Track whether simulation is paused
-	let solo = false;					// Focus only on active flock 
+	let solo = false;					// Update only on active flock
+	let collisions = false;				// Will boids separate from boids in other flocks?
+
+	// Precompute reference list for all boids
+	const allBoids = allFlocks.flatMap(flock => flock.members);
 
 	function gameLoop(timestamp) {
 		if (isPaused) return;
@@ -555,21 +580,21 @@ function startSimulation(allFlocks) {
 		
 		drawAnchor(); // Draw anchor if it's set
 
-		for (let k = 0; k < allFlocks.length; ++k) {
-			const flock = allFlocks[k];
+		for (const flock of allFlocks) {
 
 			// If solo mode is enabled, skip all non-active flocks
 			if (solo && !flock.active) continue;
 
+			// Consider all boids, or own flock, for collisions
+			const collidableBoids = collisions ? allBoids : flock.members;
+
 			const boids = flock.members;
 
 			// Update & apply forces -- velocity and position of each boid
-			for (let i = 0; i < boids.length; ++i) {
-				boids[i].updateForces(boids, flock.active);
-				boids[i].updatePosition(deltaTime);
-
-				// Draw boid
-				boids[i].draw();
+			for (const boid of boids) {
+				boid.updateForces(flock, collidableBoids);
+				boid.updatePosition(deltaTime);
+				boid.draw(); // Update canvas
 			}
 		}
 	
@@ -587,6 +612,7 @@ function startSimulation(allFlocks) {
 
 	// Simulation controller object
 	const simControls = {
+		/** Stop updates to physics and drawing */
 		togglePause() { 
 			isPaused = !isPaused;
 			if (!isPaused) {
@@ -596,9 +622,10 @@ function startSimulation(allFlocks) {
 		},
 
 		/** Only draw and update the active flock, or all if toggled off */
-		toggleSolo() {
-			solo = !solo;
-		}
+		toggleSolo: () => solo = !solo,
+
+		/** Determines whether boids interact with boids from other flocks (or only their own) */
+		toggleCollisions: () => collisions = !collisions
 	}
 	return simControls;
 }
