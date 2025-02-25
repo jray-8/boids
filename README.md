@@ -128,7 +128,7 @@ Key | Action
 
 <br>
 
-- Clicking and draging will continuously move the anchor point.
+- Clicking and dragging will continuously move the anchor point.
 
 - To remove an anchor, press `Escape` or click outside the canvas area.
 
