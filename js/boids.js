@@ -48,9 +48,8 @@ class BoidType {
 	/* Define the min, max, and stepSize for each input setting
 	 *
 	 * minSpeed is implicitly capped at maxSpeed
-	 * separationRange is implicitly capped at perceptionRange
 	 * 
-	 * separationRange also contributes to magnitude of separation vector
+	 * separationRadius also contributes to magnitude of separation vector
 	 * if turnFactor is 0, boids leave the field indefinitely
 	*/
 	static settingsConstraints = {
@@ -169,9 +168,9 @@ const boidTypes = [
 		maxSpeed: 150,
 		turnFactor: 30,
 		perceptionRadius: 20,
-		separationRadius: 65,
+		separationRadius: 30,
 		separationWeight: 1,
-		alignmentWeight: 1,
+		alignmentWeight: 1.2,
 		cohesionWeight: 0,
 		anchorRadius: 100,
 		anchoredCohesion: 0
