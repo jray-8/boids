@@ -4,14 +4,14 @@ A simulation of the flocking behaviour of birds, developed by Craig Reynolds in 
 
 At the base level, boids follow just 3 simple rules.
 
-> __Separation:__ boids move away from nearby flockmates
->
-> __Alignment:__ boids try to match the average direction of nearby flockmates
->
-> __Cohesion:__ boids fly towards the _center of mass_ of nearby flockmates
+__Separation:__ boids move away from nearby flockmates
+
+__Alignment:__ boids try to match the average direction of nearby flockmates
+
+__Cohesion:__ boids fly towards the _center of mass_ of nearby flockmates
 
 From these principles, the flock as a whole exhibits unique and complex behaviour that was not programmed into individual boids. 
-This is known as [__emergence behaviour__](https://en.wikipedia.org/wiki/Emergence).
+This is known as [emergent behaviour](https://en.wikipedia.org/wiki/Emergence).
 
 You can learn more about the implementation of these rules from 
 [Cornell](https://people.ece.cornell.edu/land/courses/ece4760/labs/s2021/Boids/Boids.html#Algorithm-Overview).
