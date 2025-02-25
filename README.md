@@ -115,8 +115,8 @@ Key | Action
 :----:|:-------:
 `Spacebar` 		| Pause the simulation
 `R` 			| Scatter active boids
-`T`				| Toggle _solo mode_
-`D`				| Toggle _collisions_
+`T`				| Toggle solo mode
+`D`				| Toggle collisions
 `1`				| Activate flock 1 – __Red boids__
 `2`				| Activate flock 2 – __Yellow boids__
 `3`				| Activate flock 3 – __Blue boids__
