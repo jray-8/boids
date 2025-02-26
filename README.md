@@ -68,8 +68,6 @@ The tab that is currently selected in the settings panel will be known as the _a
 
 <img src="./docs/yellow_defenders.gif" width="500">
 
-<br>
-
 - __Solo mode__ – focus only on the active flock. Other flocks will not be drawn or updated.
 
 - __Collisions__ (off by default) – boids will steer away from boids belonging to different flocks.
