@@ -34,7 +34,8 @@ each have their own unique properties:
 	- Move slowly and gracefully
 	- See very far, and like to align together
 	- Experience no cohesive force
-	- Enjoy a lot of personal space
+	- Separate slowly, but enjoy a lot of personal space
+	- Defense formation when anchored
 
 - __Blue Boids__
 	- Very tiny boids
@@ -48,7 +49,7 @@ each have their own unique properties:
 	- Only two exist
 	- Super fast
 	- Good at avoiding obstacles
-	- Do not align with each other, they are bound by cohesion
+	- Do not align with each other, they are bound by cohesion alone
 
 - __White Boids__
 	- Dumb boids

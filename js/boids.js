@@ -124,10 +124,10 @@ const boidTypes = [
 		turnFactor: 3,
 		perceptionRadius: 150,
 		separationRadius: 100,
-		separationWeight: 1.5,
+		separationWeight: 0.2,
 		alignmentWeight: 1,
 		cohesionWeight: 0,
-		anchorRadius: 100,
+		anchorRadius: 40,
 		anchoredCohesion: 0
 	}),
 	new BoidType('Blue', '#2f90ff', {
@@ -154,9 +154,9 @@ const boidTypes = [
 		turnFactor: 50,
 		perceptionRadius: 85,
 		separationRadius: 45,
-		separationWeight: 2,
-		alignmentWeight: 0,
-		cohesionWeight: 0.8,
+		separationWeight: 1.5,
+		alignmentWeight: 0.03,
+		cohesionWeight: 2,
 		anchorRadius: 50,
 		anchoredCohesion: 0
 	}),
