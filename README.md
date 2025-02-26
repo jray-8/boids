@@ -18,7 +18,7 @@ You can learn more about the implementation of these rules from
 
 ## Description
 
-![Homepage](./homepage.jpg)
+![Homepage](./docs/homepage.jpg)
 
 There are 5 different flock types in this simulation, 
 each have their own unique properties:
@@ -39,10 +39,11 @@ each have their own unique properties:
 
 - __Blue Boids__
 	- Very tiny boids
+	- Stick close to each other
 	- Move slightly faster
-	- Stay close together
 	- Experience no alignment
-	- Stay very close to anchor, and tighten their cohesion when anchored
+	- Tighten their cohesion when anchored
+	- Scare off predators when clustered together (accumulated effect of separation)
 
 - __Green Boids__
 	- Love boids
@@ -65,6 +66,9 @@ The user may change various parameters for each of the 5 flocks as they move.
 
 The tab that is currently selected in the settings panel will be known as the _active flock_.
 
+<img src="./docs/yellow_defenders.gif" width="500">
+
+<br>
 
 - __Solo mode__ – focus only on the active flock. Other flocks will not be drawn or updated.
 
@@ -111,6 +115,12 @@ Additionally, boids will turn around when approaching the edge of the screen.
 	- When boids are anchored, they experience no alignment and a modified cohesion weight
 
 ## Controls
+
+<div style="text-align: center;">
+	<img src="./docs/collisions.gif" width="500">
+</div>
+
+<br>
 
 Key | Action
 :----:|:-------:
